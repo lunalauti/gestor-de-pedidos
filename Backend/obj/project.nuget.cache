@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/MENj1MGvRM=",
+  "success": true,
+  "projectFilePath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj",
+  "expectedPackageFiles": [
+    "/Users/lautaro/.nuget/packages/microsoft.aspnetcore.openapi/9.0.4/microsoft.aspnetcore.openapi.9.0.4.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

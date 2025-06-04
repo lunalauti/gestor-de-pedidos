@@ -1,0 +1,7 @@
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.csproj.AssemblyReference.cache
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.GeneratedMSBuildEditorConfig.editorconfig
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.AssemblyInfoInputs.cache
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.AssemblyInfo.cs
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.csproj.CoreCompileInputs.cache
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.MvcApplicationPartsAssemblyInfo.cs
+/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/Debug/net9.0/Backend.MvcApplicationPartsAssemblyInfo.cache
