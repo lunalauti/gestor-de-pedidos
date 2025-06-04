@@ -39,6 +39,7 @@ namespace Orders.Domain.Entities
             }
         }
 
+        // TODO: Agregar orderID
         public void AddItem(string productId, int quantity, string productName)
         {
             var item = new OrderItem(productId, quantity, productName);

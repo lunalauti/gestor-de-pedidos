@@ -21,6 +21,7 @@ namespace Orders.Application.Services
                 createOrderDto.Phone
             );
 
+            // TODO: Agregar orderID
             foreach (var itemDto in createOrderDto.Items)
             {
                 order.AddItem(itemDto.ProductId, itemDto.Quantity, itemDto.ProductName);
