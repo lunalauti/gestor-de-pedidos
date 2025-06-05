@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Orders.Domain.Entities;
+using Orders.Infrastructure.Data.Configurations;
+
 namespace Orders.Infrastructure.Data
 {
     public class OrderDbContext : DbContext

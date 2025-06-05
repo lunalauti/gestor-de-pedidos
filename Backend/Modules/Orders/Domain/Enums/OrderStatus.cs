@@ -1,13 +1,11 @@
-namespace Orders.Domain.Entities
+namespace Orders.Domain.Enums;
+
+public enum OrderStatus
 {
-    public enum OrderStatus
-    {
-        Received = 1,
-        Preparing = 2,
-        ReadyToDeliver = 3,
-        OnTheWay = 4,
-        Delivered = 5,
-        DeliveryFailed = 6,
-        Cancelled = 7
-    }
+    Pending = 0,
+    Received = 1,
+    Processing = 2,
+    Ready = 3,
+    Delivered = 4,
+    Cancelled = 5
 }

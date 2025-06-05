@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Orders.Domain.Entities;
+
 namespace Orders.Infrastructure.Data.Configurations
 {
     public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>

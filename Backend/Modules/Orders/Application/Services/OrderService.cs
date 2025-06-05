@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Orders.Application.DTOs;
+using Orders.Domain.Entities;
+using Orders.Domain.Enums;
+using Orders.Domain.Repositories;
+using Orders.Application.Events;
+
 namespace Orders.Application.Services
 {
     public class OrderService : IOrderService
@@ -21,10 +31,9 @@ namespace Orders.Application.Services
                 createOrderDto.Phone
             );
 
-            // TODO: Agregar orderID
             foreach (var itemDto in createOrderDto.Items)
             {
-                order.AddItem(itemDto.ProductId, itemDto.Quantity, itemDto.ProductName);
+                order.AddItem(itemDto.ProductName, itemDto.ProductId, itemDto.Quantity);
             }
 
             await _orderRepository.AddAsync(order);
@@ -62,7 +71,7 @@ namespace Orders.Application.Services
             var order = await _orderRepository.GetByIdAsync(orderId);
             if (order == null) return false;
 
-            var oldStatus = order.Status;
+            var oldStatus = order.OrderStatusId;
             order.UpdateStatus(newStatus);
             await _orderRepository.UpdateAsync(order);
             
@@ -92,7 +101,7 @@ namespace Orders.Application.Services
                 Phone = order.Phone,
                 CreatedAt = order.CreatedAt,
                 UpdatedAt = order.UpdatedAt,
-                OrderStatusId = (int)order.Status,
+                OrderStatusId = (int)order.OrderStatusId,
                 Items = order.Items.Select(item => new OrderItemDto
                 {
                     ProductId = item.ProductId.ToString(),

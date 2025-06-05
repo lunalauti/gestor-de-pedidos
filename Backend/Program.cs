@@ -3,28 +3,16 @@ using Orders.Application.Services;
 using Orders.Application.Events;
 using Orders.Domain.Repositories;
 using Orders.Infrastructure.Data;
-using Orders.Infrastructure.Data.Migrations;
 using Orders.Infrastructure.Repositories;
 using Orders.Infrastructure.Events;
-using Connection.Application.Services;
-using Connection.Domain.Services;
 using Connection.Infrastructure.RabbitMQ;
-using Connection.Infrastructure.Publishers;
+using Connection.Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() 
-    { 
-        Title = "Order Management System API", 
-        Version = "v1",
-        Description = "Sistema de gestión de pedidos con PostgreSQL y RabbitMQ"
-    });
-});
 
 // PostgreSQL Database Configuration
 builder.Services.AddDbContext<OrderDbContext>(options =>
@@ -44,11 +32,6 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
     }
 });
 
-// Health Checks
-builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!, name: "postgresql")
-    .AddRabbitMQ(builder.Configuration.GetConnectionString("RabbitMQ")!, name: "rabbitmq");
-
 // RabbitMQ Configuration
 var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>() ?? new RabbitMQSettings();
 builder.Services.AddSingleton(rabbitMQSettings);
@@ -57,11 +40,6 @@ builder.Services.AddSingleton(rabbitMQSettings);
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderEventPublisher, OrderEventPublisher>();
-
-// Dependency Injection - Connection Module
-builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
-builder.Services.AddScoped<IMessagePublisher, RabbitMQPublisher>();
-builder.Services.AddScoped<IConnectionService, ConnectionService>();
 
 // Background Services
 builder.Services.AddHostedService<MessageConsumerService>();
@@ -84,27 +62,12 @@ builder.Logging.AddDebug();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Order Management System API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
-
 // Global Exception Middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
-
-// Health Check endpoints
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/ready");
 
 app.MapControllers();
 
@@ -117,7 +80,7 @@ using (var scope = app.Services.CreateScope())
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         
         logger.LogInformation("Initializing database...");
-        await DatabaseInitializer.InitializeAsync(context);
+        await context.Database.MigrateAsync();
         logger.LogInformation("Database initialized successfully");
     }
     catch (Exception ex)

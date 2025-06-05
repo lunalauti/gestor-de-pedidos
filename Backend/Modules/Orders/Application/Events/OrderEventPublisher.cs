@@ -1,3 +1,13 @@
+using System;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Orders.Domain.Entities;
+using Orders.Domain.Enums;
+using Orders.Application.Events;
+using Connection.Domain.Services;
+using RabbitMQ.Client;
+
 namespace Orders.Infrastructure.Events
 {
     public class OrderEventPublisher : IOrderEventPublisher
@@ -23,6 +33,7 @@ namespace Orders.Infrastructure.Events
                 Items = order.Items.Select(item => new OrderItemContract
                 {
                     Id = item.Id,
+                    OrderId = item.OrderId,
                     ProductName = item.ProductName,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,

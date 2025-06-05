@@ -1,13 +1,15 @@
+using System.Collections.Generic;
+
 namespace Orders.Application.DTOs
 {
     public class CreateOrderDto
     {
-        public string OrderNumber { get; set; } = string.Empty;
-        public string CustomerName { get; set; } = string.Empty;
-        public string CustomerEmail { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public List<CreateOrderItemDto> Items { get; set; } = new();
+        public string OrderNumber { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
+        public string Address { get; set; }
+        public string Phone { get; set; }
+        public List<CreateOrderItemDto> Items { get; set; }
     }
 
     public class CreateOrderItemDto

@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Orders.Domain.Entities;
+using Orders.Domain.Enums;
+
 namespace Orders.Domain.Repositories
 {
     public interface IOrderRepository

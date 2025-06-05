@@ -1,3 +1,7 @@
+using System.Threading.Tasks;
+using Orders.Domain.Entities;
+using Orders.Domain.Enums;
+
 namespace Orders.Application.Events
 {
     public interface IOrderEventPublisher

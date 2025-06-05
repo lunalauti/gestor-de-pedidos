@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Orders.Domain.Entities;
+using Orders.Domain.Enums;
+using Orders.Domain.Repositories;
+using Orders.Infrastructure.Data;
+
 namespace Orders.Infrastructure.Repositories
 {
     public class OrderRepository : IOrderRepository
