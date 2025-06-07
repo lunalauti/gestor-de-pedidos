@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Orders.Application.Services;
 using Orders.Application.Events;
 using Orders.Domain.Repositories;
@@ -6,7 +7,10 @@ using Orders.Infrastructure.Data;
 using Orders.Infrastructure.Repositories;
 using Orders.Infrastructure.Events;
 using Connection.Infrastructure.RabbitMQ;
+using Connection.Infrastructure.Publishers;
 using Connection.Infrastructure.Middleware;
+using Connection.Domain.Services;
+using Connection.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +37,22 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
 });
 
 // RabbitMQ Configuration
-var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>() ?? new RabbitMQSettings();
-builder.Services.AddSingleton(rabbitMQSettings);
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<RabbitMQSettings>(provider =>
+{
+    var settings = new RabbitMQSettings();
+    builder.Configuration.GetSection("RabbitMQ").Bind(settings);
+    return settings;
+});
+builder.Services.AddSingleton<IRabbitMQConnection>(provider =>
+{
+    var settings = provider.GetRequiredService<RabbitMQSettings>();
+    return new RabbitMQConnection(settings);
+});
+
+// Connection Module - Message Services
+builder.Services.AddScoped<IMessagePublisher, RabbitMQPublisher>();
+builder.Services.AddScoped<IMessageConsumer, RabbitMQConsumer>();
 
 // Dependency Injection - Orders Module
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();

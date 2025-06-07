@@ -5,7 +5,7 @@ namespace Connection.Infrastructure.RabbitMQ
     public interface IRabbitMQConnection
     {
         Task<bool> IsConnectedAsync();
-        IChannel CreateChannel();
+        Task<IChannel> CreateChannelAsync();
         Task CloseAsync();
     }
 }

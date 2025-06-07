@@ -5,7 +5,7 @@ namespace Orders.Application.DTOs
     public class OrderDto
     {
         public Guid Id { get; set; }
-        public int OrderNumber { get; set; }
+        public string OrderNumber { get; set; }
         public string CustomerName { get; set; }
         public string CustomerEmail { get; set; }
         public string Address { get; set; }
@@ -19,7 +19,7 @@ namespace Orders.Application.DTOs
     public class OrderItemDto
     {
         public Guid Id { get; set; }
-        public Guid OrderNumber { get; set; }
+        public Guid OrderId { get; set; }
         public string ProductId { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public int Quantity { get; set; }

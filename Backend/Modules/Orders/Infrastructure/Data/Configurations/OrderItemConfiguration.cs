@@ -41,7 +41,6 @@ namespace Orders.Infrastructure.Data.Configurations
             builder.HasOne<Order>()
                    .WithMany(o => o.Items)
                    .HasForeignKey(x => x.OrderId)
-                   .OnDelete(DeleteBehavior.Cascade)
                    .HasConstraintName("fk_order_items_order_id");
 
             // Índices

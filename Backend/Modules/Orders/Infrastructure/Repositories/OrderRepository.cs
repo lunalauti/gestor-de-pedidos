@@ -77,7 +77,7 @@ namespace Orders.Infrastructure.Repositories
                 return await _context.Orders
                     .Include(o => o.Items)
                     .AsNoTracking()
-                    .Where(o => o.Status == status)
+                    .Where(o => o.OrderStatusId == status)
                     .OrderByDescending(o => o.CreatedAt)
                     .ToListAsync();
             }
@@ -98,7 +98,7 @@ namespace Orders.Infrastructure.Repositories
 
                 if (status.HasValue)
                 {
-                    query = query.Where(o => o.Status == status.Value);
+                    query = query.Where(o => o.OrderStatusId == status.Value);
                 }
 
                 var totalCount = await query.CountAsync();
@@ -143,24 +143,6 @@ namespace Orders.Infrastructure.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating order: {OrderId}", order.Id);
-                throw;
-            }
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            try
-            {
-                var order = await _context.Orders.FindAsync(id);
-                if (order != null)
-                {
-                    _context.Orders.Remove(order);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting order: {OrderId}", id);
                 throw;
             }
         }

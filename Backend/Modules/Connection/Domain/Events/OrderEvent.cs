@@ -43,14 +43,4 @@ namespace Connection.Domain.Events
         }
     }
 
-    public class OrderDeletedEvent : OrderEvent
-    {
-        public Guid OrderId { get; set; }
-        public string OrderNumber { get; set; } = string.Empty;
-
-        public OrderDeletedEvent()
-        {
-            EventType = nameof(OrderDeletedEvent);
-        }
-    }
 }

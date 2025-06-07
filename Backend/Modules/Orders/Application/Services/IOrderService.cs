@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orders.Application.DTOs;
 using Orders.Domain.Enums;
+using Connection.MessageContracts;
 
 namespace Orders.Application.Services
 {
     public interface IOrderService
     {
-        Task<OrderDto> CreateOrderAsync(CreateOrderDto createOrderDto);
+        Task<OrderDto> CreateOrderAsync(OrderCreatedContract createOrderDto);
         Task<OrderDto?> GetOrderByIdAsync(Guid id);
         Task<OrderDto?> GetOrderByNumberAsync(string orderNumber);
         Task<List<OrderDto>> GetAllOrdersAsync();

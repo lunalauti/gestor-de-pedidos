@@ -54,7 +54,7 @@ namespace Orders.Infrastructure.Data.Configurations
                    .HasColumnType("timestamp with time zone");
 
             // Enum como entero
-            builder.Property(x => x.Status)
+            builder.Property(x => x.OrderStatusId)
                    .HasColumnName("status")
                    .HasConversion<int>()
                    .IsRequired();
@@ -64,7 +64,7 @@ namespace Orders.Infrastructure.Data.Configurations
                    .IsUnique()
                    .HasDatabaseName("idx_orders_order_number");
 
-            builder.HasIndex(x => x.Status)
+            builder.HasIndex(x => x.OrderStatusId)
                    .HasDatabaseName("idx_orders_status");
 
             builder.HasIndex(x => x.CreatedAt)

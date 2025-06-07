@@ -7,41 +7,53 @@ namespace Connection.Infrastructure.RabbitMQ
 {
     public class RabbitMQConnection : IRabbitMQConnection, IDisposable
     {
-        private readonly IConnection _connection;
+        private IConnection? _connection;
         private readonly RabbitMQSettings _settings;
 
         public RabbitMQConnection(RabbitMQSettings settings)
         {
-            _settings = settings;
-            var factory = new ConnectionFactory()
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        }
+
+        private async Task InitializeConnectionAsync()
+        {
+            if (_connection == null || !_connection.IsOpen)
             {
-                HostName = settings.HostName,
-                Port = settings.Port,
-                UserName = settings.UserName,
-                Password = settings.Password,
-                VirtualHost = settings.VirtualHost
-            };
+                ConnectionFactory factory = new ConnectionFactory();
+
+                factory.UserName = _settings.UserName;
+                factory.Password = _settings.Password;
+                factory.VirtualHost = _settings.VirtualHost;
+                factory.HostName = _settings.HostName;
+                factory.Port = _settings.Port;
+
+                _connection = await factory.CreateConnectionAsync();
+            }
+        }
+
+        public async Task<bool> IsConnectedAsync()
+        {
+            if (_connection == null)
+                await InitializeConnectionAsync();
             
-            _connection = factory.CreateConnection();
+            return _connection?.IsOpen ?? false;
         }
 
-        public Task<bool> IsConnectedAsync()
+        public async Task<IChannel> CreateChannelAsync()
         {
-            return Task.FromResult(_connection?.IsOpen ?? false);
+            if (_connection == null || !_connection.IsOpen)
+                await InitializeConnectionAsync();
+            
+            return await _connection!.CreateChannelAsync();
         }
 
-        public IChannel CreateChannel()
-        {
-            return _connection.CreateModel();
-        }
-
-        public Task CloseAsync()
+        public async Task CloseAsync()
         {
             if (_connection != null && _connection.IsOpen)
             {
-                _connection.Close();
+                await _connection.CloseAsync();
+                _connection.Dispose();
             }
-            return Task.CompletedTask;
         }
 
         public void Dispose()

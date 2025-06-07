@@ -10,7 +10,7 @@ namespace Orders.Domain.Entities
         public string OrderNumber { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
-        public int OrderStatusId { get; private set; }
+        public OrderStatus OrderStatusId { get; private set; }
         public string CustomerName { get; private set; }
         public string CustomerEmail { get; private set; }
         public string Address { get; private set; }
@@ -27,7 +27,7 @@ namespace Orders.Domain.Entities
             CustomerEmail = customerEmail ?? throw new ArgumentNullException(nameof(customerEmail));
             Address = address ?? throw new ArgumentNullException(nameof(address));
             Phone = phone ?? throw new ArgumentNullException(nameof(phone));
-            OrderStatusId = (int)OrderStatus.Received;
+            OrderStatusId = OrderStatus.Received;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = CreatedAt;
             Items = new List<OrderItem>();
@@ -35,9 +35,9 @@ namespace Orders.Domain.Entities
 
         public void UpdateStatus(OrderStatus newStatus)
         {
-            if (OrderStatusId != (int)newStatus)
+            if (OrderStatusId != newStatus)
             {
-                OrderStatusId = (int)newStatus;
+                OrderStatusId = newStatus;
                 UpdatedAt = DateTime.UtcNow;
             }
         }

@@ -7,6 +7,7 @@ using Orders.Domain.Entities;
 using Orders.Domain.Enums;
 using Orders.Domain.Repositories;
 using Orders.Application.Events;
+using Connection.MessageContracts;
 
 namespace Orders.Application.Services
 {
@@ -21,7 +22,7 @@ namespace Orders.Application.Services
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(CreateOrderDto createOrderDto)
+        public async Task<OrderDto> CreateOrderAsync(OrderCreatedContract createOrderDto)
         {
             var order = new Order(
                 createOrderDto.OrderNumber,
@@ -76,16 +77,6 @@ namespace Orders.Application.Services
             await _orderRepository.UpdateAsync(order);
             
             await _eventPublisher.PublishOrderStatusChangedAsync(order, oldStatus, newStatus);
-            return true;
-        }
-
-        public async Task<bool> DeleteOrderAsync(Guid id)
-        {
-            var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null) return false;
-
-            await _orderRepository.DeleteAsync(id);
-            await _eventPublisher.PublishOrderDeletedAsync(order);
             return true;
         }
 

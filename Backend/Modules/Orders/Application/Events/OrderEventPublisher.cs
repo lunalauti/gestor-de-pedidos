@@ -6,6 +6,7 @@ using Orders.Domain.Entities;
 using Orders.Domain.Enums;
 using Orders.Application.Events;
 using Connection.Domain.Services;
+using Connection.MessageContracts;
 using RabbitMQ.Client;
 
 namespace Orders.Infrastructure.Events
