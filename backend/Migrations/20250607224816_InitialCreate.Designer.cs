@@ -12,7 +12,7 @@ using Orders.Infrastructure.Data;
 namespace Backend.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20250607222416_InitialCreate")]
+    [Migration("20250607224816_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -36,16 +36,16 @@ Requiere tener el .NET SDK 8.0 instalado.
 cd backend
 ```
 
-#### b. Crear una nueva migración:
+#### b. Crear las migraciones para cada contexto:
+
+El proyecto utiliza múltiples DbContexts para separar las responsabilidades:
 
 ```bash
-dotnet ef migrations add <NombreDeTuNuevaMigracion>
-```
+# Para el contexto de Orders
+dotnet ef migrations add InitialCreate --context OrderDbContext
 
-Ejemplo:
-
-```bash
-dotnet ef migrations add InitialCreate
+# Para el contexto de Users
+dotnet ef migrations add InitialCreate --context UsersDbContext
 ```
 
 #### c. Volver al directorio raíz del proyecto:
@@ -123,4 +123,31 @@ Luego, navega al directorio `backend` y ejecuta:
 
 ```bash
 dotnet run
+```
+
+---
+
+## Solución de problemas comunes
+
+### Error al crear migraciones
+
+Si recibes el error "More than one DbContext was found", asegúrate de especificar el contexto correcto usando el parámetro `--context`:
+
+```bash
+dotnet ef migrations add InitialCreate --context OrderDbContext
+```
+
+### Problemas con la base de datos
+
+Si necesitas reiniciar la base de datos desde cero:
+
+```bash
+# Detener los contenedores
+docker-compose down
+
+# Eliminar los volúmenes
+docker-compose down -v
+
+# Reconstruir y levantar los servicios
+docker-compose up -d
 ```
