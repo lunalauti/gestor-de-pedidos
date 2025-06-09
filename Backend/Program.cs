@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Notification.Infrastructure; // <- Agregar using para tu módulo de notificaciones
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,9 @@ builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<IUserQueries, UserQueries>();
 builder.Services.AddScoped<IRoleQueries, RoleQueries>();
 
+// Dependency Injection - Notification Module
+builder.Services.AddNotificationInfrastructure(builder.Configuration);
+
 // Background Services
 builder.Services.AddHostedService<MessageConsumerService>();
 
@@ -105,7 +109,6 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
@@ -129,6 +132,7 @@ using (var scope = app.Services.CreateScope())
     {
         var usersDbContext = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
         var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+        var notificationDbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         
         logger.LogInformation("Initializing databases...");
@@ -140,6 +144,11 @@ using (var scope = app.Services.CreateScope())
         // Inicializar OrderDbContext
         await context.Database.MigrateAsync();
         logger.LogInformation("Orders database initialized successfully");
+
+        // Inicializar NotificationDbContext (si necesitas migraciones)
+        await notificationDbContext.Database.MigrateAsync();
+        logger.LogInformation("Notifications database initialized successfully");
+        
     }
     catch (Exception ex)
     {
