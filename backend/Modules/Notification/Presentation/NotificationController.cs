@@ -29,10 +29,7 @@ namespace Notification.API.Controllers
         {
             try
             {
-                // Extraer información del JWT
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                           ?? User.FindFirst("sub")?.Value 
-                           ?? User.FindFirst("userId")?.Value;
+                var userId = User.FindFirst("id")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
                 {

@@ -87,8 +87,16 @@ namespace Notification.Application.Services
                     return false;
                 }
 
-                var result = await _notificationService.SendBulkNotificationAsync(deviceTokens, content);
-                return result.SuccessCount > 0;
+                var successCount = 0;
+                foreach (var token in deviceTokens)
+                {
+                    var result = await _notificationService.SendSingleNotificationAsync(token, content);
+                    if (result)
+                    {
+                        successCount++;
+                    }
+                }
+                return successCount > 0;
             }
             catch (Exception ex)
             {
@@ -103,6 +111,7 @@ namespace Notification.Application.Services
             {
                 var tokens = await _tokenRepository.GetTokensByUserIdAsync(userId);
                 var deviceTokens = tokens.Select(t => t.Token).ToList();
+                _logger.LogInformation($"token del usuario {userId}: {deviceTokens[0]}");
 
                 if (!deviceTokens.Any())
                 {
@@ -110,8 +119,16 @@ namespace Notification.Application.Services
                     return false;
                 }
 
-                var result = await _notificationService.SendBulkNotificationAsync(deviceTokens, content);
-                return result.SuccessCount > 0;
+                var successCount = 0;
+                foreach (var token in deviceTokens)
+                {
+                    var result = await _notificationService.SendSingleNotificationAsync(token, content);
+                    if (result)
+                    {
+                        successCount++;
+                    }
+                }
+                return successCount > 0;
             }
             catch (Exception ex)
             {

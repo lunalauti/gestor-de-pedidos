@@ -5,6 +5,8 @@ using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using System.IO;
 
 namespace Notification.Infrastructure.Services
 {
@@ -25,20 +27,86 @@ namespace Notification.Infrastructure.Services
             try
             {
                 var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+                _logger.LogInformation($"Loading Firebase service account from: {serviceAccountPath}");
+                
+                if (string.IsNullOrEmpty(serviceAccountPath))
+                {
+                    throw new InvalidOperationException("Firebase:ServiceAccountPath configuration is missing");
+                }
+                
+                if (!File.Exists(serviceAccountPath))
+                {
+                    throw new FileNotFoundException($"Firebase service account file not found: {serviceAccountPath}");
+                }
+
+                // Read and validate the service account JSON
+                var serviceAccountJson = File.ReadAllText(serviceAccountPath);
+                _logger.LogDebug($"Service account JSON length: {serviceAccountJson.Length} characters");
+                
+                // Parse JSON to validate structure
+                JsonDocument jsonDoc;
+                try
+                {
+                    jsonDoc = JsonDocument.Parse(serviceAccountJson);
+                }
+                catch (JsonException ex)
+                {
+                    throw new InvalidOperationException($"Invalid JSON in service account file: {ex.Message}");
+                }
+
+                // Validate required fields
+                if (!jsonDoc.RootElement.TryGetProperty("project_id", out var projectIdElement))
+                {
+                    throw new InvalidOperationException("Service account JSON missing 'project_id' field");
+                }
+                
+                var projectId = projectIdElement.GetString();
+                if (string.IsNullOrEmpty(projectId))
+                {
+                    throw new InvalidOperationException("Service account 'project_id' field is empty");
+                }
+                
+                _logger.LogInformation($"Firebase Project ID from service account: {projectId}");
+                
+                // Validate other required fields
+                var requiredFields = new[] { "type", "private_key", "client_email" };
+                foreach (var field in requiredFields)
+                {
+                    if (!jsonDoc.RootElement.TryGetProperty(field, out _))
+                    {
+                        throw new InvalidOperationException($"Service account JSON missing required field: {field}");
+                    }
+                }
                 
                 if (FirebaseApp.DefaultInstance == null)
                 {
-                    FirebaseApp.Create(new AppOptions()
+                    var credential = GoogleCredential.FromJson(serviceAccountJson);
+                    
+                    var app = FirebaseApp.Create(new AppOptions()
                     {
-                        Credential = GoogleCredential.FromFile(serviceAccountPath)
+                        Credential = credential,
+                        ProjectId = projectId 
                     });
+                    
+                    _logger.LogInformation($"Firebase app created successfully for project: {app.Options.ProjectId}");
+                    
+                    // Double-check the project ID was set correctly
+                    if (string.IsNullOrEmpty(app.Options.ProjectId))
+                    {
+                        throw new InvalidOperationException("Firebase app project ID is still empty after initialization");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"Using existing Firebase app for project: {FirebaseApp.DefaultInstance.Options.ProjectId}");
                 }
                 
                 _firebaseMessaging = FirebaseMessaging.DefaultInstance;
+                _logger.LogInformation("Firebase messaging service initialized successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inicializando Firebase Admin SDK");
+                _logger.LogError(ex, "Critical error initializing Firebase Admin SDK");
                 throw;
             }
         }
@@ -47,7 +115,11 @@ namespace Notification.Infrastructure.Services
         {
             try
             {
-                var message = CreateMessage(deviceToken, content);
+                var message = new Message()
+                {
+                    Data = content.Data,
+                    Token = deviceToken
+                };
                 var response = await _firebaseMessaging.SendAsync(message);
                 
                 _logger.LogInformation($"Notificación enviada exitosamente: {response}");
@@ -88,13 +160,22 @@ namespace Notification.Infrastructure.Services
 
             try
             {
+                // Log Firebase app details for debugging
+                var app = FirebaseApp.DefaultInstance;
+                _logger.LogInformation($"Using Firebase Project: {app.Options.ProjectId}");
+                
                 var messages = deviceTokens.Select(token => CreateMessage(token, content)).ToList();
+                
+                // Log message details
+                _logger.LogInformation($"Sending {messages.Count} messages");
+                _logger.LogInformation($"First message sample: {System.Text.Json.JsonSerializer.Serialize(messages.FirstOrDefault())}");
+                
                 var response = await _firebaseMessaging.SendAllAsync(messages);
                 
                 result.SuccessCount = response.SuccessCount;
                 result.FailureCount = response.FailureCount;
                 
-                // Procesar errores y tokens inválidos
+                // Process errors with detailed logging
                 for (int i = 0; i < response.Responses.Count; i++)
                 {
                     var individualResponse = response.Responses[i];
@@ -103,26 +184,36 @@ namespace Notification.Infrastructure.Services
                         var token = deviceTokens[i];
                         result.FailedTokens.Add(token);
                         
-                        if (individualResponse.Exception is FirebaseMessagingException fmEx && IsInvalidTokenError(fmEx))
+                        _logger.LogError($"Failed to send to token {token.Substring(0, 10)}...: {individualResponse.Exception?.Message}");
+                        
+                        if (individualResponse.Exception is FirebaseMessagingException fmEx)
                         {
-                            result.InvalidTokens.Add(token);
-                            await _tokenRepository.DeactivateTokenAsync(token);
+                            _logger.LogError($"Firebase error code: {fmEx.MessagingErrorCode}, Error: {fmEx.ErrorCode}");
+                            
+                            if (IsInvalidTokenError(fmEx))
+                            {
+                                result.InvalidTokens.Add(token);
+                                await _tokenRepository.DeactivateTokenAsync(token);
+                            }
                         }
                     }
                 }
                 
-                _logger.LogInformation($"Notificaciones masivas: {result.SuccessCount}/{result.TotalSent} exitosas");
+                _logger.LogInformation($"Bulk notifications: {result.SuccessCount}/{result.TotalSent} successful");
+                return result;
+            }
+            catch (FirebaseMessagingException fmEx)
+            {
+                _logger.LogError(fmEx, $"Firebase Messaging Exception: {fmEx.MessagingErrorCode} - {fmEx.ErrorCode}");
+                _logger.LogError($"Firebase exception details: {fmEx.Message}");
                 
-                if (result.InvalidTokens.Any())
-                {
-                    _logger.LogWarning($"Desactivados {result.InvalidTokens.Count} tokens inválidos");
-                }
-                
+                result.FailureCount = result.TotalSent;
+                result.FailedTokens = deviceTokens;
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error enviando notificaciones masivas");
+                _logger.LogError(ex, "Unexpected error sending bulk notifications");
                 result.FailureCount = result.TotalSent;
                 result.FailedTokens = deviceTokens;
                 return result;

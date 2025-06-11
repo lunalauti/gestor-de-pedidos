@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+firebase-service-account.json
 
 # User-specific files
 *.rsuser
