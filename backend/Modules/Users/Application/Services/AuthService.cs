@@ -95,9 +95,9 @@ namespace Users.Application.Services {
             var hashed = _passwordService.HashPassword(user, request.Password);
             user.SetPassword(hashed);
 
-            var defaultRole = 2; // User
+            var defaultRole = 1; // warehouse_operator
 
-            var role = request.AdminId.HasValue ? 1 : defaultRole; // Admin
+            var role = request.IsDelivery == true ? 2 : defaultRole; // delivery
 
             user.RoleId = role;
 
