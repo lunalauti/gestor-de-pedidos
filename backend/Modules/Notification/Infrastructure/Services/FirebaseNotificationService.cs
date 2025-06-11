@@ -1,3 +1,11 @@
+using Notification.Domain.Interfaces;
+using Notification.Domain.ValueObjects;
+using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 namespace Notification.Infrastructure.Services
 {
     public class FirebaseNotificationService : INotificationService
@@ -151,6 +159,7 @@ namespace Notification.Infrastructure.Services
                     Body = content.Body
                 },
                 Data = content.Data,
+                Android = new AndroidConfig()
                 {
                     Priority = Priority.High,
                     Notification = new AndroidNotification()
@@ -166,8 +175,15 @@ namespace Notification.Infrastructure.Services
 
         private bool IsInvalidTokenError(FirebaseMessagingException ex)
         {
-            return ex.MessagingErrorCode == MessagingErrorCode.InvalidRegistration ||
-                   ex.MessagingErrorCode == MessagingErrorCode.Unregistered;
+            // Updated error codes for newer Firebase Admin SDK versions
+            return ex.MessagingErrorCode == MessagingErrorCode.InvalidArgument ||
+                ex.MessagingErrorCode == MessagingErrorCode.Unregistered ||
+                ex.MessagingErrorCode == MessagingErrorCode.SenderIdMismatch ||
+                (ex.ErrorCode != null && (
+                    ex.ErrorCode.Equals("INVALID_REGISTRATION_TOKEN") ||
+                    ex.ErrorCode.Equals("REGISTRATION_TOKEN_NOT_REGISTERED") ||
+                    ex.ErrorCode.Equals("INVALID_ARGUMENT")
+                ));
         }
 
         private async Task UpdateTokenLastUsed(string deviceToken)

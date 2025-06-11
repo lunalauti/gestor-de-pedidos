@@ -143,7 +143,7 @@ namespace Notification.API.Controllers
         {
             var scenarios = new
             {
-                scenarios = new[]
+                scenarios = new object[] // Explicitly specify object[] type
                 {
                     new { 
                         name = "Nuevo Pedido",
@@ -151,6 +151,7 @@ namespace Notification.API.Controllers
                         body = new { 
                             orderId = "ORD-12345",
                             eventType = "ORDER_RECEIVED",
+                            targetRole = 1 // Add targetRole for consistency
                         }
                     },
                     new { 
@@ -159,6 +160,7 @@ namespace Notification.API.Controllers
                         body = new { 
                             orderId = "ORD-12345",
                             eventType = "ORDER_READY",
+                            targetRole = 1
                         }
                     },
                     new { 
@@ -167,6 +169,7 @@ namespace Notification.API.Controllers
                         body = new { 
                             orderId = "ORD-12345",
                             eventType = "ORDER_ASSIGNED",
+                            targetRole = 1
                         }
                     },
                     new { 
@@ -175,6 +178,7 @@ namespace Notification.API.Controllers
                         body = new { 
                             title = "Mi Título Personalizado",
                             body = "Este es el mensaje de mi notificación",
+                            userId = "TEST_USER_001", // Add userId for consistency
                             data = new Dictionary<string, string>
                             {
                                 { "custom_field", "valor_personalizado" }

@@ -22,22 +22,26 @@ namespace Orders.Application.Services
             _eventPublisher = eventPublisher;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(OrderCreatedContract createOrderDto)
+        // CAMBIO: Ahora recibe CreateOrderRequestContract (sin OrderId, CreatedAt)
+        public async Task<OrderDto> CreateOrderAsync(CreateOrderRequestContract createOrderRequest)
         {
+            // Crear la orden en la base de datos
             var order = new Order(
-                createOrderDto.OrderNumber,
-                createOrderDto.CustomerName,
-                createOrderDto.CustomerEmail,
-                createOrderDto.Address,
-                createOrderDto.Phone
+                createOrderRequest.OrderNumber,
+                createOrderRequest.CustomerName,
+                createOrderRequest.CustomerEmail,
+                createOrderRequest.Address,
+                createOrderRequest.Phone
             );
 
-            foreach (var itemDto in createOrderDto.Items)
+            foreach (var itemDto in createOrderRequest.Items)
             {
                 order.AddItem(itemDto.ProductName, itemDto.ProductId, itemDto.Quantity);
             }
 
             await _orderRepository.AddAsync(order);
+            
+            // PUBLICAR: Confirmar que la orden fue creada (con OrderId, CreatedAt)
             await _eventPublisher.PublishOrderCreatedAsync(order);
 
             return MapToDto(order);
@@ -95,7 +99,9 @@ namespace Orders.Application.Services
                 OrderStatusId = (int)order.OrderStatusId,
                 Items = order.Items.Select(item => new OrderItemDto
                 {
-                    ProductId = item.ProductId.ToString(),
+                    Id = item.Id,
+                    OrderId = item.OrderId,
+                    ProductId = item.ProductId,
                     ProductName = item.ProductName,
                     Quantity = item.Quantity,
                 }).ToList()

@@ -1,4 +1,4 @@
-namespace Backend.Modules.Users.Application.DTOs {
+namespace Users.Application.DTOs {
     
     public class LoginRequest {
         public string Email { get; set; }

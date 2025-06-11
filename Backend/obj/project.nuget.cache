@@ -1,9 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "EcF/wbWRTbQ=",
+  "dgSpecHash": "uGboBwQ2PW4=",
   "success": true,
-  "projectFilePath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj",
+  "projectFilePath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/Backend.csproj",
   "expectedPackageFiles": [
+    "/Users/lautaro/.nuget/packages/firebaseadmin/2.4.0/firebaseadmin.2.4.0.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/google.api.gax/3.2.0/google.api.gax.3.2.0.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/google.api.gax.rest/3.2.0/google.api.gax.rest.3.2.0.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/google.apis/1.49.0/google.apis.1.49.0.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/google.apis.auth/1.49.0/google.apis.auth.1.49.0.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/google.apis.core/1.49.0/google.apis.core.1.49.0.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/8.0.11/microsoft.aspnetcore.authentication.jwtbearer.8.0.11.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/microsoft.aspnetcore.openapi/8.0.11/microsoft.aspnetcore.openapi.8.0.11.nupkg.sha512",
@@ -37,6 +43,7 @@
     "/Users/lautaro/.nuget/packages/microsoft.identitymodel.tokens/7.3.1/microsoft.identitymodel.tokens.7.3.1.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/microsoft.openapi/1.6.14/microsoft.openapi.1.6.14.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/mono.texttemplating/2.2.1/mono.texttemplating.2.2.1.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/newtonsoft.json/12.0.3/newtonsoft.json.12.0.3.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/npgsql/8.0.5/npgsql.8.0.5.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.10/npgsql.entityframeworkcore.postgresql.8.0.10.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/rabbitmq.client/7.0.0/rabbitmq.client.7.0.0.nupkg.sha512",
@@ -59,9 +66,9 @@
     "/Users/lautaro/.nuget/packages/system.text.encoding.codepages/6.0.0/system.text.encoding.codepages.6.0.0.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/system.threading.channels/6.0.0/system.threading.channels.6.0.0.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/system.threading.ratelimiting/8.0.0/system.threading.ratelimiting.8.0.0.nupkg.sha512",
-    "/Users/lautaro/.nuget/packages/microsoft.netcore.app.ref/8.0.15/microsoft.netcore.app.ref.8.0.15.nupkg.sha512",
     "/Users/lautaro/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.15/microsoft.aspnetcore.app.ref.8.0.15.nupkg.sha512",
-    "/Users/lautaro/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.15/microsoft.netcore.app.host.osx-arm64.8.0.15.nupkg.sha512"
+    "/Users/lautaro/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.15/microsoft.netcore.app.host.osx-arm64.8.0.15.nupkg.sha512",
+    "/Users/lautaro/.nuget/packages/microsoft.netcore.app.ref/8.0.15/microsoft.netcore.app.ref.8.0.15.nupkg.sha512"
   ],
   "logs": []
 }

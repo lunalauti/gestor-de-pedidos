@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj": {}
+    "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/Backend.csproj": {}
   },
   "projects": {
-    "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj": {
+    "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj",
+        "projectUniqueName": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/Backend.csproj",
+        "projectPath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/Backend.csproj",
         "packagesPath": "/Users/lautaro/.nuget/packages/",
-        "outputPath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/Backend/obj/",
+        "outputPath": "/Users/lautaro/Desktop/Facultad/Arquitecturas de software/gestor-de-pedidos/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/lautaro/.nuget/NuGet/NuGet.Config"
@@ -44,6 +44,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "FirebaseAdmin": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.0.11, )"

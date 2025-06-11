@@ -1,3 +1,5 @@
+using Notification.Domain.ValueObjects;
+
 namespace Notification.Domain.Interfaces
 {
     public interface INotificationService

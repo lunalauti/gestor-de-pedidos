@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Backend.Modules.Users.Domain.Entities{
+namespace Users.Domain.Entities{
 public class User
   {
       public int Id { get; private set; }

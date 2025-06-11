@@ -1,6 +1,6 @@
 using Backend.Shared.DTOs;
 
-namespace Backend.Modules.Users.Application.DTOs {
+namespace Users.Application.DTOs {
 
     public class LoginResponse {
         public string Token { get; set; }

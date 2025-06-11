@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 
-using Backend.Modules.Users.Domain.Entities;
+using Users.Domain.Entities;
 using Backend.Shared.DTOs;
-using Backend.Modules.Users.Infrastructure.Persistence;
-using Backend.Modules.Users.Application.Interfaces;
+using Users.Infrastructure.Persistence;
+using Users.Application.Interfaces;
 
-namespace Backend.Modules.Users.Application.Queries
+namespace Users.Application.Queries
 {
     public class UserQueries: IUserQueries
     {

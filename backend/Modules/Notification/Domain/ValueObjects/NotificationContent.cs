@@ -6,7 +6,7 @@ namespace Notification.Domain.ValueObjects
         public string Body { get; private set; }
         public Dictionary<string, string> Data { get; private set; }
 
-        public NotificationContent(string title, string body, Dictionary<string, string> data = null)
+        public NotificationContent(string title, string body, Dictionary<string, string>? data = null)
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Body = body ?? throw new ArgumentNullException(nameof(body));

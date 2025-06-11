@@ -1,26 +1,36 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 using Orders.Application.Services;
 using Orders.Application.Events;
 using Orders.Domain.Repositories;
 using Orders.Infrastructure.Data;
 using Orders.Infrastructure.Repositories;
 using Orders.Infrastructure.Events;
+
 using Connection.Infrastructure.RabbitMQ;
 using Connection.Infrastructure.Publishers;
 using Connection.Infrastructure.Middleware;
 using Connection.Domain.Services;
 using Connection.Infrastructure.Services;
-using Backend.Modules.Users.Application.Queries;
-using Backend.Modules.Users.Application.Services;
-using Backend.Modules.Users.Infrastructure.Persistence;
-using Backend.Modules.Users.Application.Interfaces;
+
+using Users.Application.Queries;
+using Users.Application.Services;
+using Users.Infrastructure.Persistence;
+using Users.Application.Interfaces;
+
+// Notification Module Imports
+using Notification.Application.Services;
+using Notification.Infrastructure.Data;
+using Notification.Domain.Interfaces;
+using Notification.Infrastructure.Repositories;
+using Notification.Infrastructure.Services;
+using Notification.Infrastructure.BackgroundServices;
+
 using Backend.Shared.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Notification.Infrastructure; // <- Agregar using para tu módulo de notificaciones
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +41,7 @@ builder.Services.AddEndpointsApiExplorer();
 // PostgreSQL Database Configuration
 var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Orders Database Context
 builder.Services.AddDbContext<OrderDbContext>(options =>
 {
     options.UseNpgsql(baseConnectionString, npgsqlOptions =>
@@ -40,9 +51,19 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
     });
 });
 
-// UsersDbContext
+// Users Database Context
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql($"{baseConnectionString};Search Path=auth"));
+
+// Notifications Database Context
+builder.Services.AddDbContext<NotificationDbContext>(options =>
+{
+    options.UseNpgsql(baseConnectionString, npgsqlOptions =>
+    {
+        npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "notifications");
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
+    });
+});
 
 // RabbitMQ Configuration
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
@@ -73,11 +94,14 @@ builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<IUserQueries, UserQueries>();
 builder.Services.AddScoped<IRoleQueries, RoleQueries>();
 
-// Dependency Injection - Notification Module
-builder.Services.AddNotificationInfrastructure(builder.Configuration);
+// Dependency Injection - Notifications Module
+builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
+builder.Services.AddScoped<INotificationService, FirebaseNotificationService>();
+builder.Services.AddScoped<INotificationApplicationService, NotificationApplicationService>();
 
 // Background Services
 builder.Services.AddHostedService<MessageConsumerService>();
+builder.Services.AddHostedService<TokenCleanupService>();
 
 // CORS Configuration
 builder.Services.AddCors(options =>
@@ -90,7 +114,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+// JWT Configuration
 var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is not configured");
+}
 var key = Encoding.ASCII.GetBytes(jwtKey);
 
 // Logging Configuration
@@ -98,6 +127,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// Authentication Configuration
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -109,18 +139,31 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
 });
 
+// Authorization
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
 
 // Global Exception Middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
+// Authentication & Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -130,25 +173,25 @@ using (var scope = app.Services.CreateScope())
 {
     try
     {
-        var usersDbContext = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
-        var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-        var notificationDbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
         logger.LogInformation("Initializing databases...");
         
-        // Inicializar UsersDbContext
+        // Initialize Users Database
+        var usersDbContext = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
         await usersDbContext.Database.MigrateAsync();
         logger.LogInformation("Users database initialized successfully");
         
-        // Inicializar OrderDbContext
-        await context.Database.MigrateAsync();
+        // Initialize Orders Database
+        var ordersDbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+        await ordersDbContext.Database.MigrateAsync();
         logger.LogInformation("Orders database initialized successfully");
 
-        // Inicializar NotificationDbContext (si necesitas migraciones)
+        // Initialize Notifications Database
+        var notificationDbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
         await notificationDbContext.Database.MigrateAsync();
         logger.LogInformation("Notifications database initialized successfully");
         
+        logger.LogInformation("All databases initialized successfully");
     }
     catch (Exception ex)
     {

@@ -4,15 +4,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-using Backend.Modules.Users.Application.DTOs;
-using Backend.Modules.Users.Domain.Entities;
-using Backend.Modules.Users.Infrastructure.Persistence;
-using Backend.Modules.Users.Application.Interfaces;
+using Users.Application.DTOs;
+using Users.Domain.Entities;
+using Users.Infrastructure.Persistence;
+using Users.Application.Interfaces;
 using Backend.Shared.Services;
 using Backend.Shared.DTOs;
 
 
-namespace Backend.Modules.Users.Application.Services {
+namespace Users.Application.Services {
 
     public class AuthService
     {

@@ -1,7 +1,7 @@
 using Backend.Shared.DTOs;
-using Backend.Modules.Users.Domain.Entities;
+using Users.Domain.Entities;
 
-namespace Backend.Modules.Users.Application.Interfaces {
+namespace Users.Application.Interfaces {
     public interface IUserQueries
     {
         Task<List<UserDto>> GetUsersAsync();

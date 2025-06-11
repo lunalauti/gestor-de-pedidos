@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Backend.Modules.Users.Domain.Entities;
+using Users.Domain.Entities;
 
 namespace Backend.Shared.Services
 {

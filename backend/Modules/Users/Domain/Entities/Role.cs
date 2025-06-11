@@ -1,5 +1,5 @@
 
-namespace Backend.Modules.Users.Domain.Entities{
+namespace Users.Domain.Entities{
     public class Role
     {
         public int Id { get; private set; }

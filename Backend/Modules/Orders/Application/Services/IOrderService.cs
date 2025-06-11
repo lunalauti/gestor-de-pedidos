@@ -9,7 +9,10 @@ namespace Orders.Application.Services
 {
     public interface IOrderService
     {
-        Task<OrderDto> CreateOrderAsync(OrderCreatedContract createOrderDto);
+        // Método para procesar solicitudes de creación (evento entrante)
+        Task<OrderDto> CreateOrderAsync(CreateOrderRequestContract createOrderRequest);
+        
+        // Métodos existentes
         Task<OrderDto?> GetOrderByIdAsync(Guid id);
         Task<OrderDto?> GetOrderByNumberAsync(string orderNumber);
         Task<List<OrderDto>> GetAllOrdersAsync();

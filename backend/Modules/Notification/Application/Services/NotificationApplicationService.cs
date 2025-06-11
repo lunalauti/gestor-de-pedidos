@@ -1,3 +1,8 @@
+using Notification.Application.DTOs;
+using Notification.Domain.Entities;
+using Notification.Domain.ValueObjects;
+using Notification.Domain.Interfaces;
+
 namespace Notification.Application.Services
 {
     public interface INotificationApplicationService

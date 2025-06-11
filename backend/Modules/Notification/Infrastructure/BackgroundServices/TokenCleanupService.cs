@@ -1,3 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Notification.Domain.Interfaces;
+
 namespace Notification.Infrastructure.BackgroundServices
 {
     public class TokenCleanupService : BackgroundService

@@ -26,22 +26,23 @@ namespace Connection.Infrastructure.Services
                 using var scope = _serviceProvider.CreateScope();
                 var consumer = scope.ServiceProvider.GetRequiredService<IMessageConsumer>();
 
-                // Consumir mensajes de create_order
-                await consumer.StartConsumingAsync<OrderCreatedContract>("create_order", async (orderContract) =>
+                // CAMBIO: Ahora consume CreateOrderRequestContract (solicitudes de creación)
+                await consumer.StartConsumingAsync<CreateOrderRequestContract>("create_order", async (orderRequest) =>
                 {
                     using var handlerScope = _serviceProvider.CreateScope();
                     var orderService = handlerScope.ServiceProvider.GetRequiredService<IOrderService>();
                     
-                    _logger.LogInformation("Processing create_order event for Order ID: {OrderId}", orderContract.OrderId);
+                    _logger.LogInformation("Processing create_order request for Order Number: {OrderNumber}", orderRequest.OrderNumber);
                     
                     try
                     {
-                        await orderService.CreateOrderAsync(orderContract);
-                        _logger.LogInformation("Successfully processed create_order event for Order ID: {OrderId}", orderContract.OrderId);
+                        // El OrderService creará la orden Y publicará el evento de confirmación
+                        var createdOrder = await orderService.CreateOrderAsync(orderRequest);
+                        _logger.LogInformation("Successfully processed create_order request. Created Order ID: {OrderId}", createdOrder.Id);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error processing create_order event for Order ID: {OrderId}", orderContract.OrderId);
+                        _logger.LogError(ex, "Error processing create_order request for Order Number: {OrderNumber}", orderRequest.OrderNumber);
                         throw; // Re-throw para que RabbitMQ reencole el mensaje
                     }
                 });

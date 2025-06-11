@@ -3,6 +3,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Backend.Migrations.UsersDb
 {
     /// <inheritdoc />
@@ -51,6 +53,16 @@ namespace Backend.Migrations.UsersDb
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                schema: "auth",
+                table: "Roles",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Operario de deposito", "warehouse_operator" },
+                    { 2, "Delivery", "delivery" }
                 });
 
             migrationBuilder.CreateIndex(

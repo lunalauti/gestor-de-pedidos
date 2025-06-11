@@ -1,7 +1,7 @@
 using Backend.Shared.DTOs;
 
 
-namespace Backend.Modules.Users.Application.Interfaces {
+namespace Users.Application.Interfaces {
     public interface IRoleQueries
     {
         Task<RoleDto> GetByIdAsync(int id);

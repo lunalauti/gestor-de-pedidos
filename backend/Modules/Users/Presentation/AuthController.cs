@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Backend.Modules.Users.Application.Services;
-using Backend.Modules.Users.Application.DTOs;
+using Users.Application.Services;
+using Users.Application.DTOs;
 
-namespace Backend.Modules.Users.Presentation 
+namespace Users.Presentation 
 {
    
     [Route("api/user")]

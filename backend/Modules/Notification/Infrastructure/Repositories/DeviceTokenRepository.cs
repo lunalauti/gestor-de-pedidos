@@ -1,3 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Notification.Domain.Interfaces;
+using Notification.Infrastructure.Data;
+using Notification.Domain.Entities;
+using Notification.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
+
 namespace Notification.Infrastructure.Repositories
 {
     public class DeviceTokenRepository : IDeviceTokenRepository
@@ -80,7 +87,7 @@ namespace Notification.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<DeviceToken> GetTokenByValueAsync(string tokenValue)
+        public async Task<DeviceToken?> GetTokenByValueAsync(string tokenValue)
         {
             return await _context.DeviceTokens
                 .FirstOrDefaultAsync(dt => dt.Token == tokenValue);

@@ -46,6 +46,9 @@ dotnet ef migrations add InitialCreate --context OrderDbContext
 
 # Para el contexto de Users
 dotnet ef migrations add InitialCreate --context UsersDbContext
+
+# Para el contexto de Notifications
+dotnet ef migrations add InitialCreate --context NotificationDbContext
 ```
 
 #### c. Volver al directorio raíz del proyecto:
