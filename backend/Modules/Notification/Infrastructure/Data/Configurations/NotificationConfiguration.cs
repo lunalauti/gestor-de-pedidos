@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Notification.Domain.Entities;
+using Notifications.Domain.Entities;
 
-namespace Notification.Infrastructure.Data.Configurations
+namespace Notifications.Infrastructure.Data.Configurations
 {
     public class DeviceTokenConfiguration : IEntityTypeConfiguration<DeviceToken>
     {

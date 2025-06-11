@@ -1,4 +1,4 @@
-namespace Notification.Application.DTOs
+namespace Notifications.Application.DTOs
 {
     public class DeviceTokenRequest
     {

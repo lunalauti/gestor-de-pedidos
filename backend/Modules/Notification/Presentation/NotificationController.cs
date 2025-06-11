@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Notification.Application.Services;
-using Notification.Application.DTOs;
-using Notification.Domain.ValueObjects;
-using Notification.Domain.Entities;
+using Notifications.Application.Services;
+using Notifications.Application.DTOs;
+using Notifications.Domain.ValueObjects;
+using Notifications.Domain.Entities;
 using System.Security.Claims;
 
-namespace Notification.API.Controllers
+namespace Notifications.API.Controllers
 {
     [ApiController]
     [Route("api/notification")]

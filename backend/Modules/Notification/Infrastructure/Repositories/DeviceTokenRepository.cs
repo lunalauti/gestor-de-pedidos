@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Notification.Domain.Interfaces;
-using Notification.Infrastructure.Data;
-using Notification.Domain.Entities;
-using Notification.Domain.ValueObjects;
+using Notifications.Domain.Interfaces;
+using Notifications.Infrastructure.Data;
+using Notifications.Domain.Entities;
+using Notifications.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace Notification.Infrastructure.Repositories
+namespace Notifications.Infrastructure.Repositories
 {
     public class DeviceTokenRepository : IDeviceTokenRepository
     {

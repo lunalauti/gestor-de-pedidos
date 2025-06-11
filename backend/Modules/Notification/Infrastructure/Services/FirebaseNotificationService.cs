@@ -1,5 +1,5 @@
-using Notification.Domain.Interfaces;
-using Notification.Domain.ValueObjects;
+using Notifications.Domain.Interfaces;
+using Notifications.Domain.ValueObjects;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.IO;
 
-namespace Notification.Infrastructure.Services
+namespace Notifications.Infrastructure.Services
 {
     public class FirebaseNotificationService : INotificationService
     {
@@ -117,6 +117,11 @@ namespace Notification.Infrastructure.Services
             {
                 var message = new Message()
                 {
+                    Notification = new Notification
+                    {
+                        Title = content.Title,
+                        Body = content.Body,
+                    },
                     Data = content.Data,
                     Token = deviceToken
                 };

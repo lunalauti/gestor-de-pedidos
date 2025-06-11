@@ -1,6 +1,6 @@
-using Notification.Domain.ValueObjects;
+using Notifications.Domain.ValueObjects;
 
-namespace Notification.Domain.Entities
+namespace Notifications.Domain.Entities
 {
     public class DeviceToken
     {

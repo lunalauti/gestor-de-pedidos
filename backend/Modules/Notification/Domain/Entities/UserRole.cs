@@ -1,4 +1,4 @@
-namespace Notification.Domain.ValueObjects
+namespace Notifications.Domain.ValueObjects
 {
     public enum UserRole
     {

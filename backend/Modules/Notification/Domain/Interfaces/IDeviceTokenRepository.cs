@@ -1,7 +1,7 @@
-using Notification.Domain.Entities;
-using Notification.Domain.ValueObjects;
+using Notifications.Domain.Entities;
+using Notifications.Domain.ValueObjects;
 
-namespace Notification.Domain.Interfaces
+namespace Notifications.Domain.Interfaces
 {
     public interface IDeviceTokenRepository
     {

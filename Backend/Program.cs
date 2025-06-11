@@ -22,12 +22,12 @@ using Users.Infrastructure.Persistence;
 using Users.Application.Interfaces;
 
 // Notification Module Imports
-using Notification.Application.Services;
-using Notification.Infrastructure.Data;
-using Notification.Domain.Interfaces;
-using Notification.Infrastructure.Repositories;
-using Notification.Infrastructure.Services;
-using Notification.Infrastructure.BackgroundServices;
+using Notifications.Application.Services;
+using Notifications.Infrastructure.Data;
+using Notifications.Domain.Interfaces;
+using Notifications.Infrastructure.Repositories;
+using Notifications.Infrastructure.Services;
+using Notifications.Infrastructure.BackgroundServices;
 
 using Backend.Shared.Services;
 using System.Text;
