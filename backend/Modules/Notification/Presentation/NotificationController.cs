@@ -4,6 +4,7 @@ using Notifications.Application.Services;
 using Notifications.Application.DTOs;
 using Notifications.Domain.ValueObjects;
 using Notifications.Domain.Entities;
+using Notifications.Domain.Interfaces;
 using System.Security.Claims;
 
 namespace Notifications.API.Controllers

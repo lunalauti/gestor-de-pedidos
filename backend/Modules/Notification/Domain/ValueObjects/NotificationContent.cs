@@ -13,27 +13,25 @@ namespace Notifications.Domain.ValueObjects
             Data = data ?? new Dictionary<string, string>();
         }
 
-        public static NotificationContent CreateOrderNotification(string orderId, string eventType, string customerName, string externalId)
+        public static NotificationContent CreateOrderNotification(Guid orderId, string eventType, string externalId)
         {
-            var (title, body) = GetContentByEventType(eventType, externalId, customerName);
+            var (title, body) = GetContentByEventType(eventType, externalId);
             
             return new NotificationContent(title, body, new Dictionary<string, string>
             {
-                { "orderId", orderId },
+                { "orderId", orderId.ToString() },
                 { "eventType", eventType },
-                { "customerName", customerName },
                 { "externalId", externalId }
             });
         }
 
-        private static (string title, string body) GetContentByEventType(string eventType, string externalId, string customerName)
+        private static (string title, string body) GetContentByEventType(string eventType, string externalId)
         {
             return eventType switch
             {
-                "ORDER_RECEIVED" => ("Nuevo Pedido", $"Pedido #{externalId} recibido - {customerName}"),
+                "ORDER_RECEIVED" => ("Nuevo Pedido", $"Pedido #{externalId} recibido"),
                 "ORDER_READY" => ("Pedido Listo", $"Pedido #{externalId} listo para envío"),
-                "ORDER_ASSIGNED" => ("Pedido Asignado", $"Te asignaron el pedido #{externalId}"),
-                "ORDER_OUT_FOR_DELIVERY" => ("En Camino", $"Pedido #{externalId} en camino"),
+                "ORDER_ASSIGNED" => ("En Camino", $"Pedido #{externalId} en camino"),
                 "ORDER_DELIVERED" => ("Entregado", $"Pedido #{externalId} entregado exitosamente"),
                 "ORDER_FAILED" => ("Fallo en Entrega", $"No se pudo entregar el pedido #{externalId}"),
                 _ => ("Actualización de Pedido", $"Cambios en pedido #{externalId}")

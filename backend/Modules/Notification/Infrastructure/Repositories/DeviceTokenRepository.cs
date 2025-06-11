@@ -139,5 +139,13 @@ namespace Notifications.Infrastructure.Repositories
             return await _context.DeviceTokens
                 .AnyAsync(dt => dt.Token == tokenValue && dt.IsActive);
         }
+
+        public async Task<List<DeviceToken>> GetAllActiveTokensAsync()
+        {
+            return await _context.DeviceTokens
+                .Where(dt => dt.IsActive)
+                .OrderByDescending(dt => dt.LastUsed)
+                .ToListAsync();
+        }
     }
 }

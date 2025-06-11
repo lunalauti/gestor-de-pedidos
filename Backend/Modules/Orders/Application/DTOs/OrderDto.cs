@@ -13,6 +13,8 @@ namespace Orders.Application.DTOs
         public int OrderStatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public int? DeliveryUserId { get; set; }
+        public string? DeliveryUserEmail { get; set; }
         public List<OrderItemDto> Items { get; set; }
     }
 

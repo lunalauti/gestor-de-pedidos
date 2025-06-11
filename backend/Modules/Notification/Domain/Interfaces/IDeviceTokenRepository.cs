@@ -7,6 +7,7 @@ namespace Notifications.Domain.Interfaces
     {
         Task<DeviceToken> SaveTokenAsync(DeviceToken deviceToken);
         Task<List<DeviceToken>> GetActiveTokensByRoleAsync(UserRole role);
+        Task<List<DeviceToken>> GetAllActiveTokensAsync();
         Task<List<DeviceToken>> GetTokensByUserIdAsync(string userId);
         Task<DeviceToken?> GetTokenByValueAsync(string tokenValue);
         Task DeactivateTokenAsync(string tokenValue);

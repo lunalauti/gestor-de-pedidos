@@ -16,6 +16,8 @@ namespace Orders.Domain.Entities
         public string Address { get; private set; }
         public string Phone { get; private set; }
         public List<OrderItem> Items { get; private set; }
+        public int? DeliveryUserId { get; private set; }
+        public string? DeliveryUserEmail { get; private set; }
 
         protected Order() { }
 
@@ -27,7 +29,7 @@ namespace Orders.Domain.Entities
             CustomerEmail = customerEmail ?? throw new ArgumentNullException(nameof(customerEmail));
             Address = address ?? throw new ArgumentNullException(nameof(address));
             Phone = phone ?? throw new ArgumentNullException(nameof(phone));
-            OrderStatusId = OrderStatus.Received;
+            OrderStatusId = OrderStatus.RECEIVED;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = CreatedAt;
             Items = new List<OrderItem>();
@@ -46,6 +48,19 @@ namespace Orders.Domain.Entities
         {
             var item = new OrderItem(Id, productName, productId, quantity);
             Items.Add(item);
+        }
+
+        public void AssignDeliveryUser(int userId, string userEmail)
+        {
+            if (userId <= 0)
+                throw new ArgumentException("El ID del usuario debe ser mayor que cero", nameof(userId));
+            
+            if (string.IsNullOrEmpty(userEmail))
+                throw new ArgumentException("El email del usuario no puede estar vacío", nameof(userEmail));
+
+            DeliveryUserId = userId;
+            DeliveryUserEmail = userEmail;
+            UpdateStatus(OrderStatus.OUT_FOR_DELIVERY);
         }
     }
 }

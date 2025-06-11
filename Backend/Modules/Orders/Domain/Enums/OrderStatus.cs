@@ -2,10 +2,9 @@ namespace Orders.Domain.Enums;
 
 public enum OrderStatus
 {
-    Pending = 0,
-    Received = 1,
-    Processing = 2,
-    Ready = 3,
-    Delivered = 4,
-    Cancelled = 5
+    RECEIVED = 1,
+    READY_TO_SHIP = 2,
+    OUT_FOR_DELIVERY = 3,
+    DELIVERED = 4,
+    DELIVERY_FAILED = 5
 }

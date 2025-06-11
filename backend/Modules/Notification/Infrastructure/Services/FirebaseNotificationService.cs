@@ -158,51 +158,42 @@ namespace Notifications.Infrastructure.Services
         {
             var result = new NotificationResult { TotalSent = deviceTokens.Count };
             
-            if (!deviceTokens.Any())
-            {
-                return result;
-            }
-
             try
             {
+
                 // Log Firebase app details for debugging
                 var app = FirebaseApp.DefaultInstance;
                 _logger.LogInformation($"Using Firebase Project: {app.Options.ProjectId}");
-                
-                var messages = deviceTokens.Select(token => CreateMessage(token, content)).ToList();
-                
-                // Log message details
-                _logger.LogInformation($"Sending {messages.Count} messages");
-                _logger.LogInformation($"First message sample: {System.Text.Json.JsonSerializer.Serialize(messages.FirstOrDefault())}");
-                
-                var response = await _firebaseMessaging.SendAllAsync(messages);
-                
-                result.SuccessCount = response.SuccessCount;
-                result.FailureCount = response.FailureCount;
-                
-                // Process errors with detailed logging
-                for (int i = 0; i < response.Responses.Count; i++)
+
+                var message = new MulticastMessage()
                 {
-                    var individualResponse = response.Responses[i];
-                    if (!individualResponse.IsSuccess)
+                    Tokens = deviceTokens,
+                    Notification = new Notification
                     {
-                        var token = deviceTokens[i];
-                        result.FailedTokens.Add(token);
-                        
-                        _logger.LogError($"Failed to send to token {token.Substring(0, 10)}...: {individualResponse.Exception?.Message}");
-                        
-                        if (individualResponse.Exception is FirebaseMessagingException fmEx)
+                        Title = content.Title,
+                        Body = content.Body,
+                    },
+                    Data = content.Data
+                };
+
+                var response = await _firebaseMessaging.SendEachForMulticastAsync(message);
+                if (response.FailureCount > 0)
+                {
+                    var failedTokens = new List<string>();
+                    for (var i = 0; i < response.Responses.Count; i++)
+                    {
+                        if (!response.Responses[i].IsSuccess)
                         {
-                            _logger.LogError($"Firebase error code: {fmEx.MessagingErrorCode}, Error: {fmEx.ErrorCode}");
-                            
-                            if (IsInvalidTokenError(fmEx))
-                            {
-                                result.InvalidTokens.Add(token);
-                                await _tokenRepository.DeactivateTokenAsync(token);
-                            }
+                            // The order of responses corresponds to the order of the registration tokens.
+                            failedTokens.Add(deviceTokens[i]);
                         }
                     }
+
+                    Console.WriteLine($"List of tokens that caused failures: {failedTokens}");
                 }
+
+                result.SuccessCount = response.SuccessCount;
+                result.FailureCount = response.FailureCount;
                 
                 _logger.LogInformation($"Bulk notifications: {result.SuccessCount}/{result.TotalSent} successful");
                 return result;
@@ -242,31 +233,6 @@ namespace Notifications.Infrastructure.Services
             {
                 return false;
             }
-        }
-
-        private Message CreateMessage(string deviceToken, NotificationContent content)
-        {
-            return new Message()
-            {
-                Token = deviceToken,
-                Notification = new FirebaseAdmin.Messaging.Notification()
-                {
-                    Title = content.Title,
-                    Body = content.Body
-                },
-                Data = content.Data,
-                Android = new AndroidConfig()
-                {
-                    Priority = Priority.High,
-                    Notification = new AndroidNotification()
-                    {
-                        Icon = "ic_notification",
-                        Color = "#FF6B35",
-                        Sound = "default",
-                        ChannelId = "order_updates"
-                    }
-                }
-            };
         }
 
         private bool IsInvalidTokenError(FirebaseMessagingException ex)

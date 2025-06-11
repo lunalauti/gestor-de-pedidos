@@ -101,7 +101,6 @@ namespace Users.Application.Services {
 
             user.RoleId = role;
 
-            // TODO: Pasar la logica de creacion de usuarios a un factory
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

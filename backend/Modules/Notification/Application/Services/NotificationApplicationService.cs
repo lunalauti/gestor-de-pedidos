@@ -2,30 +2,27 @@ using Notifications.Application.DTOs;
 using Notifications.Domain.Entities;
 using Notifications.Domain.ValueObjects;
 using Notifications.Domain.Interfaces;
+using Orders.Domain.Repositories;
+using Orders.Domain.Entities;
 
 namespace Notifications.Application.Services
 {
-    public interface INotificationApplicationService
-    {
-        Task<DeviceTokenResponse> RegisterDeviceTokenAsync(string userId, UserRole userRole, DeviceTokenRequest request);
-        Task<bool> SendOrderNotificationAsync(string orderId, string eventType, UserRole targetRole);
-        Task<bool> SendPersonalNotificationAsync(string userId, NotificationContent content);
-        Task DeactivateUserDevicesAsync(string userId);
-    }
-
     public class NotificationApplicationService : INotificationApplicationService
     {
         private readonly IDeviceTokenRepository _tokenRepository;
         private readonly INotificationService _notificationService;
+        private readonly IOrderRepository _orderRepository;
         private readonly ILogger<NotificationApplicationService> _logger;
 
         public NotificationApplicationService(
             IDeviceTokenRepository tokenRepository,
             INotificationService notificationService,
+            IOrderRepository orderRepository,
             ILogger<NotificationApplicationService> logger)
         {
             _tokenRepository = tokenRepository;
             _notificationService = notificationService;
+            _orderRepository = orderRepository;
             _logger = logger;
         }
 
@@ -63,19 +60,21 @@ namespace Notifications.Application.Services
             }
         }
 
-        public async Task<bool> SendOrderNotificationAsync(string orderId, string eventType, UserRole targetRole)
+        public async Task<bool> SendOrderNotificationAsync(string eventType, UserRole targetRole, Guid orderId)
         {
             try
             {
-                // Obtener información del pedido (esto vendría de tu Order service)
-                // var order = await _orderService.GetOrderAsync(orderId);
-                
-                // Por ahora simulamos los datos
+                var order = await _orderRepository.GetByIdAsync(orderId);
+                if (order == null)
+                {
+                    _logger.LogWarning($"No se encontró la orden con ID {orderId}");
+                    return false;
+                }
+
                 var content = NotificationContent.CreateOrderNotification(
                     orderId, 
                     eventType, 
-                    "Cliente Ejemplo", // order.CustomerName
-                    "ORD-123" // order.ExternalId
+                    order.OrderNumber
                 );
 
                 var tokens = await _tokenRepository.GetActiveTokensByRoleAsync(targetRole);
@@ -87,16 +86,9 @@ namespace Notifications.Application.Services
                     return false;
                 }
 
-                var successCount = 0;
-                foreach (var token in deviceTokens)
-                {
-                    var result = await _notificationService.SendSingleNotificationAsync(token, content);
-                    if (result)
-                    {
-                        successCount++;
-                    }
-                }
-                return successCount > 0;
+                var result = await _notificationService.SendBulkNotificationAsync(deviceTokens, content);
+
+                return result.SuccessCount > 0;
             }
             catch (Exception ex)
             {
@@ -148,6 +140,31 @@ namespace Notifications.Application.Services
             {
                 _logger.LogError(ex, $"Error desactivando dispositivos del usuario {userId}");
                 throw;
+            }
+        }
+
+        public async Task<bool> SendBroadcastNotificationAsync(NotificationContent content)
+        {
+            try
+            {
+                var tokens = await _tokenRepository.GetAllActiveTokensAsync();
+                var deviceTokens = tokens.Select(t => t.Token).ToList();
+
+                if (!deviceTokens.Any())
+                {
+                    _logger.LogWarning("No hay tokens activos en el sistema");
+                    return false;
+                }
+
+                var result = await _notificationService.SendBulkNotificationAsync(deviceTokens, content);
+
+                return result.SuccessCount > 0;
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error enviando notificación broadcast");
+                return false;
             }
         }
     }

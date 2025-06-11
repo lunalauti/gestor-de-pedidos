@@ -2,7 +2,7 @@ namespace Notifications.Domain.ValueObjects
 {
     public enum UserRole
     {
-        DEPOSIT,
-        DELIVERY
+        WAREHOUSE_OPERATOR = 1,
+        DELIVERY = 2
     }
 }

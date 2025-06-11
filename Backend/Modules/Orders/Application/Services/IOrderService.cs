@@ -11,12 +11,12 @@ namespace Orders.Application.Services
     {
         // Método para procesar solicitudes de creación (evento entrante)
         Task<OrderDto> CreateOrderAsync(CreateOrderRequestContract createOrderRequest);
-        
-        // Métodos existentes
+        Task<bool> AssignDeliveryUserAsync(Guid orderId, int userId);
+        Task<bool> ReadyToShipAsync(Guid orderId);
+
         Task<OrderDto?> GetOrderByIdAsync(Guid id);
         Task<OrderDto?> GetOrderByNumberAsync(string orderNumber);
         Task<List<OrderDto>> GetAllOrdersAsync();
         Task<List<OrderDto>> GetOrdersByStatusAsync(OrderStatus status);
-        Task<bool> UpdateOrderStatusAsync(Guid orderId, OrderStatus newStatus);
     }
 }
