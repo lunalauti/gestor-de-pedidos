@@ -6,8 +6,8 @@ ENV POSTGRES_DB=OrderManagementDB
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=postgres123
 
-# Copy the initialization script to the Docker image
-COPY inicializar.sql /docker-entrypoint-initdb.d/
+# Copy the initialization scripts to the Docker image
+COPY backup_completo.sql /docker-entrypoint-initdb.d/
 
 # Expose the default PostgreSQL port
 EXPOSE 5432
