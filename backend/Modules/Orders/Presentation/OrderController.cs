@@ -82,7 +82,7 @@ namespace Orders.API.Controllers
                 
                 if (!result)
                 {
-                    return NotFound($"Order with ID {orderId} not found or could not be updated");
+                    return NotFound($"No se encontró la orden con ID {orderId} o no se pudo actualizar");
                 }
 
                 _logger.LogInformation("Order {OrderId} marked as ready to ship", orderId);
@@ -93,32 +93,92 @@ namespace Orders.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error marking order {OrderId} as ready to ship", orderId);
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, "Error interno del servidor");
             }
         }
 
         [HttpPut("{orderId:guid}/out-for-delivery")]
-        public async Task<IActionResult> OutForDelivery(Guid orderId, [FromBody] AssignDeliveryUserRequest request)
+        public async Task<IActionResult> OutForDelivery(Guid orderId)
         {
+            var userId = User.FindFirst("id")?.Value;
+            
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "Usuario no válido en el token" });
+            }
+
+            if (!int.TryParse(userId, out int userIdInt))
+            {
+                return BadRequest(new { message = "ID de usuario inválido en el token" });
+            }
+            
             try
             {
 
-                var result = await _orderService.AssignDeliveryUserAsync(orderId, request.UserId);
+                var result = await _orderService.AssignDeliveryUserAsync(orderId, userIdInt);
                 
                 if (!result)
                 {
-                    return NotFound($"Order with ID {orderId} not found or delivery user with ID {request.UserId} not found");
+                    return NotFound($"No se encontró la orden con ID {orderId} o el repartidor con ID {userId}");
                 }
 
-                _logger.LogInformation("Order {OrderId} assigned to delivery user {UserId} and marked as out for delivery", orderId, request.UserId);
+                _logger.LogInformation("Order {OrderId} assigned to delivery user {userId} and marked as out for delivery", orderId, userId);
                 
                 var message = new { Message = $"Orden {orderId} en camino" };
                 return Ok(message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error assigning delivery user {UserId} to order {OrderId}", request?.UserId, orderId);
-                return StatusCode(500, "Internal server error");
+                _logger.LogError(ex, "Error assigning delivery user {userId} to order {OrderId}", userId, orderId);
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
+
+        [HttpPut("{orderId:guid}/delivered")]
+        public async Task<IActionResult> Delivered(Guid orderId)
+        {
+            try
+            {
+                var result = await _orderService.DeliveredAsync(orderId);
+                
+                if (!result)
+                {
+                    return NotFound($"No se encontró la orden con ID {orderId} o no se pudo actualizar");
+                }
+
+                _logger.LogInformation("Order {OrderId} marked as delivered", orderId);
+
+                var message = new { Message = $"Orden {orderId} entregada" };
+                return Ok(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error marking order {OrderId} as delivered", orderId);
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
+
+        [HttpPut("{orderId:guid}/delivery-failed")]
+        public async Task<IActionResult> DeliveryFailed(Guid orderId)
+        {
+            try
+            {
+                var result = await _orderService.DeliveryFailedAsync(orderId);
+                
+                if (!result)
+                {
+                    return NotFound($"No se encontró la orden con ID {orderId} o no se pudo actualizar");
+                }
+
+                _logger.LogInformation("Order {OrderId} marked as failed", orderId);
+
+                var message = new { Message = $"Orden {orderId} con entrega fallida" };
+                return Ok(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error marking order {OrderId} with delivery failed", orderId);
+                return StatusCode(500, "Error interno del servidor");
             }
         }
     }

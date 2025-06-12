@@ -116,19 +116,60 @@ namespace Orders.Application.Services
             return true;
         }
 
-        public async Task<bool> ReadyToShipAsync(Guid orderId)
+        private async Task<bool> ChangeOrderStatusAsync(Guid orderId, OrderStatus newStatus, string notificationType, UserRole? notificationRole = null)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
             if (order == null) return false;
 
             var oldStatus = order.OrderStatusId;
-            order.UpdateStatus(OrderStatus.READY_TO_SHIP);
+            order.UpdateStatus(newStatus);
             await _orderRepository.UpdateAsync(order);
 
-            await _eventPublisher.PublishOrderStatusChangedAsync(order, oldStatus, OrderStatus.READY_TO_SHIP);
-            await _notificationService.SendOrderNotificationAsync("ORDER_READY", UserRole.DELIVERY, order.Id);
+            await _eventPublisher.PublishOrderStatusChangedAsync(order, oldStatus, newStatus);
+            
+            if (notificationRole.HasValue)
+            {
+                await _notificationService.SendOrderNotificationAsync(notificationType, notificationRole.Value, order.Id);
+            } else {
+                // Broadcast
+                var content = NotificationContent.CreateOrderNotification(
+                    orderId, 
+                    notificationType, 
+                    order.OrderNumber
+                );
+            
+                await _notificationService.SendBroadcastNotificationAsync(content);
+            }
 
             return true;
+        }
+
+        public async Task<bool> ReadyToShipAsync(Guid orderId)
+        {
+            return await ChangeOrderStatusAsync(
+                orderId, 
+                OrderStatus.READY_TO_SHIP, 
+                "ORDER_READY", 
+                UserRole.DELIVERY
+            );
+        }
+
+        public async Task<bool> DeliveredAsync(Guid orderId)
+        {
+            return await ChangeOrderStatusAsync(
+                orderId,
+                OrderStatus.DELIVERED,
+                "ORDER_DELIVERED"
+            );
+        }
+
+        public async Task<bool> DeliveryFailedAsync(Guid orderId)
+        {
+            return await ChangeOrderStatusAsync(
+                orderId,
+                OrderStatus.DELIVERY_FAILED,
+                "ORDER_FAILED"
+            );
         }
 
         private static OrderDto _MapToDto(Order order)
