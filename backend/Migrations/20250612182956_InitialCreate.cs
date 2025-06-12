@@ -22,7 +22,7 @@ namespace Backend.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     order_number = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
                     customer_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     customer_email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),

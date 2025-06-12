@@ -28,7 +28,7 @@ namespace Connection.Infrastructure.Publishers
             if (_channel == null)
             {
                 _channel = await _connection.CreateChannelAsync();
-                
+
                 await _channel.ExchangeDeclareAsync(
                     exchange: exchange,
                     type: ExchangeType.Direct,
@@ -36,6 +36,20 @@ namespace Connection.Infrastructure.Publishers
                     autoDelete: false,
                     arguments: null);
             }
+
+            // Asegurarse de que la cola exista y esté bindeada al exchange
+            await _channel.QueueDeclareAsync(
+                queue: routingKey,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            await _channel.QueueBindAsync(
+                queue: routingKey,
+                exchange: exchange,
+                routingKey: routingKey,
+                arguments: null);
 
             var properties = new BasicProperties
             {
@@ -53,6 +67,7 @@ namespace Connection.Infrastructure.Publishers
                 basicProperties: properties,
                 body: body);
         }
+
 
         public async Task CloseAsync()
         {

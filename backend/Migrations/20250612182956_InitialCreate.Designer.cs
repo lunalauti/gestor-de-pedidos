@@ -12,7 +12,7 @@ using Orders.Infrastructure.Data;
 namespace Backend.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20250612044908_InitialCreate")]
+    [Migration("20250612182956_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("phone");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 

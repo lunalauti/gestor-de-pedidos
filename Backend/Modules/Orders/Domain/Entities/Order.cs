@@ -9,7 +9,7 @@ namespace Orders.Domain.Entities
         public Guid Id { get; private set; }
         public string OrderNumber { get; private set; }
         public DateTime CreatedAt { get; private set; }
-        public DateTime? UpdatedAt { get; private set; }
+        public DateTime UpdatedAt { get; private set; }
         public OrderStatus OrderStatusId { get; private set; }
         public string CustomerName { get; private set; }
         public string CustomerEmail { get; private set; }

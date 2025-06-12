@@ -110,7 +110,12 @@ namespace Orders.Application.Services
                 order.OrderNumber
             );
             
-            await _eventPublisher.PublishOrderStatusChangedAsync(order, oldStatus, OrderStatus.OUT_FOR_DELIVERY);
+            await _eventPublisher.PublishOrderStatusUpdateAsync(
+                order.Id, 
+                OrderStatus.OUT_FOR_DELIVERY, 
+                order.UpdatedAt
+            );
+            
             await _notificationService.SendBroadcastNotificationAsync(content);
 
             return true;
@@ -125,7 +130,11 @@ namespace Orders.Application.Services
             order.UpdateStatus(newStatus);
             await _orderRepository.UpdateAsync(order);
 
-            await _eventPublisher.PublishOrderStatusChangedAsync(order, oldStatus, newStatus);
+            await _eventPublisher.PublishOrderStatusUpdateAsync(
+                order.Id, 
+                newStatus, 
+                order.UpdatedAt!
+            );
             
             if (notificationRole.HasValue)
             {

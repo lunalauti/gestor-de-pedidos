@@ -1,3 +1,4 @@
+using Orders.Domain.Enums;
 namespace Connection.MessageContracts
 {
     // Evento ENTRANTE: Sistema externo solicita crear orden
@@ -24,13 +25,12 @@ namespace Connection.MessageContracts
         public List<OrderItemContract> Items { get; set; } = new();
     }
 
-    public class OrderStatusChangedContract
+    // Evento SALIENTE: Notificar cambio de estado de orden
+    public class OrderStatusUpdateContract
     {
-        public Guid OrderId { get; set; }
-        public string OrderNumber { get; set; } = string.Empty;
-        public string OldStatus { get; set; } = string.Empty;
-        public string NewStatus { get; set; } = string.Empty;
-        public DateTime ChangedAt { get; set; }
+        public string OrderId { get; set; } = string.Empty;
+        public OrderStatus Status { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 
     // Para el evento entrante

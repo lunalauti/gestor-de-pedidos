@@ -73,7 +73,7 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("phone");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
