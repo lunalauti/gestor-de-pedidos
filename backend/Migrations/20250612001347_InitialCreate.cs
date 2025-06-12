@@ -27,7 +27,9 @@ namespace Backend.Migrations
                     customer_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     customer_email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    DeliveryUserId = table.Column<int>(type: "integer", nullable: true),
+                    DeliveryUserEmail = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

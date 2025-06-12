@@ -51,6 +51,12 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("customer_name");
 
+                    b.Property<string>("DeliveryUserEmail")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("DeliveryUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasMaxLength(50)

@@ -12,7 +12,7 @@ using Orders.Infrastructure.Data;
 namespace Backend.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20250611021838_InitialCreate")]
+    [Migration("20250612001347_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -53,6 +53,12 @@ namespace Backend.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("customer_name");
+
+                    b.Property<string>("DeliveryUserEmail")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("DeliveryUserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("OrderNumber")
                         .IsRequired()
