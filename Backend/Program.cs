@@ -41,30 +41,24 @@ builder.Services.AddEndpointsApiExplorer();
 // PostgreSQL Database Configuration
 var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Orders Database Context - Configurado para usar esquema 'orders'
+// Orders Database Context
 builder.Services.AddDbContext<OrderDbContext>(options =>
 {
-    options.UseNpgsql($"{baseConnectionString};Search Path=orders", npgsqlOptions =>
+    options.UseNpgsql(baseConnectionString, npgsqlOptions =>
     {
         npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "orders");
         npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
     });
 });
 
-// Users Database Context - Configurado para usar esquema 'auth'
+// Users Database Context
 builder.Services.AddDbContext<UsersDbContext>(options =>
-{
-    options.UseNpgsql($"{baseConnectionString};Search Path=auth", npgsqlOptions =>
-    {
-        npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "auth");
-        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
-    });
-});
+    options.UseNpgsql($"{baseConnectionString};Search Path=auth"));
 
-// Notifications Database Context - Configurado para usar esquema 'notifications'
+// Notifications Database Context
 builder.Services.AddDbContext<NotificationDbContext>(options =>
 {
-    options.UseNpgsql($"{baseConnectionString};Search Path=notifications", npgsqlOptions =>
+    options.UseNpgsql(baseConnectionString, npgsqlOptions =>
     {
         npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "notifications");
         npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
@@ -184,17 +178,17 @@ using (var scope = app.Services.CreateScope())
         
         // Initialize Users Database
         var usersDbContext = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
-        await usersDbContext.Database.EnsureCreatedAsync(); // Cambio: usar EnsureCreated en lugar de Migrate
+        await usersDbContext.Database.MigrateAsync();
         logger.LogInformation("Users database initialized successfully");
         
         // Initialize Orders Database
         var ordersDbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-        await ordersDbContext.Database.EnsureCreatedAsync(); // Cambio: usar EnsureCreated en lugar de Migrate
+        await ordersDbContext.Database.MigrateAsync();
         logger.LogInformation("Orders database initialized successfully");
 
         // Initialize Notifications Database
         var notificationDbContext = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
-        await notificationDbContext.Database.EnsureCreatedAsync(); // Cambio: usar EnsureCreated en lugar de Migrate
+        await notificationDbContext.Database.MigrateAsync();
         logger.LogInformation("Notifications database initialized successfully");
         
         logger.LogInformation("All databases initialized successfully");

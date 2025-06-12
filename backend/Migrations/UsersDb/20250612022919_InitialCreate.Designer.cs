@@ -11,7 +11,7 @@ using Users.Infrastructure.Persistence;
 namespace Backend.Migrations.UsersDb
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20250612031202_InitialCreate")]
+    [Migration("20250612022919_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
