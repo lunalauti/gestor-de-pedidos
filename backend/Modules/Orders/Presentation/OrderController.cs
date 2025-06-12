@@ -111,7 +111,18 @@ namespace Orders.API.Controllers
             {
                 return BadRequest(new { message = "ID de usuario inválido en el token" });
             }
-            
+
+            var roleString = User.FindFirst(ClaimTypes.Role)?.Value 
+                            ?? User.FindFirst("role")?.Value;
+
+            if (!Enum.TryParse<UserRole>(roleString, true, out var userRole))
+            {
+                return BadRequest(new { message = "Rol de usuario no válido" });
+            }
+
+            if (userRole != UserRole.DELIVERY)
+                return Unauthorized(new { message = "Solo un delivery puede asignarse ordenes" });
+
             try
             {
 
