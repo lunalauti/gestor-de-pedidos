@@ -7,6 +7,6 @@ namespace Orders.Application.Events
     public interface IOrderEventPublisher
     {
         Task PublishOrderCreatedAsync(Order order);
-        Task PublishOrderStatusUpdateAsync(Guid orderId, OrderStatus status, DateTime updatedAt);
+        Task PublishOrderStatusUpdateAsync(Guid orderId, string orderNumber, OrderStatus status, DateTime updatedAt);
     }
 }

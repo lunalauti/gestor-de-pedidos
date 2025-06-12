@@ -112,6 +112,7 @@ namespace Orders.Application.Services
             
             await _eventPublisher.PublishOrderStatusUpdateAsync(
                 order.Id, 
+                order.OrderNumber,
                 OrderStatus.OUT_FOR_DELIVERY, 
                 order.UpdatedAt
             );
@@ -132,8 +133,9 @@ namespace Orders.Application.Services
 
             await _eventPublisher.PublishOrderStatusUpdateAsync(
                 order.Id, 
+                order.OrderNumber,
                 newStatus, 
-                order.UpdatedAt!
+                order.UpdatedAt
             );
             
             if (notificationRole.HasValue)
@@ -158,8 +160,7 @@ namespace Orders.Application.Services
             return await ChangeOrderStatusAsync(
                 orderId, 
                 OrderStatus.READY_TO_SHIP, 
-                "ORDER_READY", 
-                UserRole.DELIVERY
+                "ORDER_READY"
             );
         }
 

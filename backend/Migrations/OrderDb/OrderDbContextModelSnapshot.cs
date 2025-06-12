@@ -8,7 +8,7 @@ using Orders.Infrastructure.Data;
 
 #nullable disable
 
-namespace Backend.Migrations
+namespace Backend.Migrations.OrderDb
 {
     [DbContext(typeof(OrderDbContext))]
     partial class OrderDbContextModelSnapshot : ModelSnapshot

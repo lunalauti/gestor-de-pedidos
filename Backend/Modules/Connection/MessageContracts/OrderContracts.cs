@@ -29,6 +29,7 @@ namespace Connection.MessageContracts
     public class OrderStatusUpdateContract
     {
         public string OrderId { get; set; } = string.Empty;
+        public string OrderNumber { get; set; } = string.Empty;
         public OrderStatus Status { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

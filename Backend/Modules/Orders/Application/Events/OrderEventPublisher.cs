@@ -44,11 +44,12 @@ namespace Orders.Infrastructure.Events
             await _messagePublisher.PublishAsync(contract, "order.created");
         }
 
-        public async Task PublishOrderStatusUpdateAsync(Guid orderId, OrderStatus status, DateTime updatedAt)
+        public async Task PublishOrderStatusUpdateAsync(Guid orderId, string orderNumber, OrderStatus status, DateTime updatedAt)
         {
             var contract = new OrderStatusUpdateContract
             {
                 OrderId = orderId.ToString(),
+                OrderNumber = orderNumber.ToString(),
                 Status = status,
                 UpdatedAt = updatedAt
             };
