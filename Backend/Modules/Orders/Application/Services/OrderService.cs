@@ -84,6 +84,14 @@ namespace Orders.Application.Services
             return orders.Select(_MapToDto).ToList();
         }
 
+        public async Task<List<OrderDto>> GetOrdersByDeliveryUserAsync(OrderStatus status, int deliveryUserId)
+        {
+            var orders = await _orderRepository.GetByStatusAsync(status);
+            return orders.Where(o => o.DeliveryUserId == deliveryUserId)
+                        .Select(_MapToDto)
+                        .ToList();
+        }
+
         public async Task<bool> AssignDeliveryUserAsync(Guid orderId, int userId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);

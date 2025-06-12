@@ -18,5 +18,6 @@ namespace Orders.Application.Services
         Task<OrderDto?> GetOrderByNumberAsync(string orderNumber);
         Task<List<OrderDto>> GetAllOrdersAsync();
         Task<List<OrderDto>> GetOrdersByStatusAsync(OrderStatus status);
+        Task<List<OrderDto>> GetOrdersByDeliveryUserAsync(OrderStatus status, int deliveryUserId);
     }
 }
