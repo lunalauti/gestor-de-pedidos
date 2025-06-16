@@ -53,9 +53,15 @@ namespace Orders.Application.Services
             
             // PUBLICAR: Confirmar que la orden fue creada (con OrderId, CreatedAt)
             await _eventPublisher.PublishOrderCreatedAsync(order);
+
+            var content = NotificationContent.CreateOrderNotification(
+                order.Id, 
+                "ORDER_RECEIVED", 
+                order.OrderNumber
+            );
             
             // Enviar notificación a los usuarios con rol warehouse_operator
-            await _notificationService.SendOrderNotificationAsync("ORDER_RECEIVED", UserRole.WAREHOUSE_OPERATOR, order.Id);
+            await _notificationService.SendBroadcastNotificationAsync(content);
 
             return _MapToDto(order);
         }

@@ -9,10 +9,10 @@ using Orders.Infrastructure.Data;
 
 #nullable disable
 
-namespace Backend.Migrations.OrderDb
+namespace Backend.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20250612195448_InitialCreate")]
+    [Migration("20250616015800_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

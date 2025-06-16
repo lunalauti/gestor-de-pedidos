@@ -149,6 +149,7 @@ namespace Notifications.Application.Services
             {
                 var tokens = await _tokenRepository.GetAllActiveTokensAsync();
                 var deviceTokens = tokens.Select(t => t.Token).ToList();
+                _logger.LogInformation($"Tokens activos: {string.Join(", ", deviceTokens)}");  // Corregido aquí
 
                 if (!deviceTokens.Any())
                 {
@@ -157,9 +158,7 @@ namespace Notifications.Application.Services
                 }
 
                 var result = await _notificationService.SendBulkNotificationAsync(deviceTokens, content);
-
                 return result.SuccessCount > 0;
-                
             }
             catch (Exception ex)
             {
