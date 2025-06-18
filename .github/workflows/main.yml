@@ -1,0 +1,35 @@
+name: CI/CD Deploy to VM
+on:
+  workflow_dispatch:
+
+env:
+  VM_IP: 104.197.112.0
+  VM_USER: user
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $VM_IP >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP hostname
+
+      - name: Deploy to VM
+        run: |
+          ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP '
+            cd /opt/tu-app &&
+            git pull origin main &&
+            docker-compose pull &&
+            docker-compose down --remove-orphans &&
+            docker-compose up -d --build
+          '
